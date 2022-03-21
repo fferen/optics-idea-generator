@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Optics & Photonics Idea Generator</title>
+</head>
+<body>
+
+    <p style="text-align: center; font-size: 40px; font-family: sans-serif; ">Write your next paper on</p>
+
+    <div style="border-radius: 30px; border: 0.2em solid; background-color: rgba(240, 240, 240, 1); margin: auto; display: table; padding: 0pt 30pt; box-shadow: 0px 0px 39px 2px rgba(0,0,255,1);">
+        <p style="text-align: center; font-size: 30px; font-family: sans-serif" id="idea"></p>
+    </div>
+    <div style="margin: 3em auto auto auto; display: table; padding: 0pt;box-shadow: 0px 0px 2px 1px rgba(200,200,200,1);">
+        <button onClick="window.open('https://google.com/search?q='.concat(document.getElementById(&quot;idea&quot;).innerHTML), '_blank');" style="background-color: rgb(255, 255, 255); height: 2em; padding: 1em; line-height: 0; margin: auto; text-align: center; font-size: 15px; font-family: sans-serif;">Sounds good. Does it exist?</button> 
+    </div>
+    <div style="margin: 1em auto; display: table; padding: 0pt;box-shadow: 0px 0px 2px 1px rgba(200,200,200,1);">
+        <button onClick="window.location.reload();" style="background-color: rgb(255, 255, 255); height: 2em; padding: 1em; line-height: 0; margin: auto; text-align: center; font-size: 15px; font-family: sans-serif;">That's rubbish, gimme another one</button>
+    </div>
+
+    <script>
+        const adjs = [  // save priority=5 for materials
+               ["optimized", 1],
+               ["tunable", 2],
+               ["polymer", 5],
+               ["perovskite", 5],
+               ["Au", 5],
+               ["Ag", 5],
+               ["InP", 5],
+               ["GaN", 5],
+               ["GaAs", 5],
+               ["InGaAs", 5],
+               ["AlGaAs", 5],
+               ["large-scale", 2],
+               "high-efficiency",
+               "strained",
+               ["multilayer", 4],
+               ["random", 2],
+               ["silicon", 5],
+               "on-chip",
+               "waveguide-coupled"];
+
+        const concepts = [
+               "transformation optics",
+               "exceptional points",
+               "optical bound-states-in-continuum",
+               "photon-phonon coupling",
+               "photon-exciton coupling",
+               "exciton-phonon coupling",
+               "inverse design",
+               "topological optics",
+               "chiral molecules"];
+
+        const objs = [   // 1 if mat
+               "nanolasers",
+               "optical phased array",
+               "piezoelectrics",
+               "quantum dots",
+               "plasmonics",
+               "metasurfaces",
+               "meta-lens",
+               "Fresnel lens",
+               "chiral metasurfaces",
+               ["2D materials", 1],
+               ["carbon nanotubes", 1],
+               ["liquid crystals", 1],
+               "ring resonators",
+               "waveguides"];
+
+        const apps = [
+               "ultrafast imaging",
+               "high-speed photodetectors",
+               "3D printing",
+               ["random lasing", "u"],
+               ["Raman lasing", "u"],
+               "radiative cooling",
+               "third-harmonic generation",
+               "second-harmonic generation",
+               "four-wave mixing",
+               "Raman amplification",
+               "THz generation",
+               "optical computing",
+               "quantum computing",
+               "deep learning applications",
+               "edge computing",
+               "pressure sensing",
+               "temperature sensing",
+               "beamsteering applications",
+               "LIDAR",
+               "Li-Fi applications",
+               "optical communication",
+               "microLED applications",
+               "OLED applications",
+               "VCSEL applications",
+               "solar cell applications",
+               "thin-film solar cells",
+               ["light-emitting transistors", "u"],
+               ["grating couplers", "u"],
+               "fiber lasers"
+               ];
+
+        function choice(a) {
+            let i = Math.floor(Math.random()*a.length);
+            return a[i];
+        }
+
+        function count(s, a) {
+            return s.split(a).length-1;
+        }
+
+        function upperStart(s) {
+            return s[0].toUpperCase().concat(s.substring(1));
+        }
+        function lowerStart(s) {
+            return s[0].toLowerCase().concat(s.substring(1));
+        }
+
+        let s;
+        let dup = 1;
+        while (dup) {
+            let usedMat;
+            let usedApp = choice(apps);
+            if (Math.random() < 0.7) {
+                // use adj
+                if (Math.random() < 0.5) {
+                    // 2 adjs
+                    let adj1, adj2;
+                    while (adj1 == adj2) {
+                        adj1 = choice(adjs);
+                        adj2 = choice(adjs);
+                    }
+                    let pr1, pr2;
+                    if (typeof(adj1) == "object") {
+                        pr1 = adj1[1];
+                        adj1 = adj1[0];
+                    } else {
+                        pr1 = 3;
+                    }
+                    if (typeof(adj2) == "object") {
+                        pr2 = adj2[1];
+                        adj2 = adj2[0];
+                    } else {
+                        pr2 = 3;
+                    }
+                    if (pr2 < pr1) {
+                        [adj1, adj2] = [adj2, adj1];
+                    }
+                    let obj = choice(objs);
+                    let isObjMat = 0;
+                    if (typeof(obj) == "object") {
+                        isObjMat = 1;
+                        obj = obj[0];
+                    }
+                    if (isObjMat && (pr1 == 5 || pr2 == 5)) {
+                        // adj is mat and obj is mat
+                        continue;
+                    }
+
+                    if (pr1 == pr2 && pr1 == 5) {
+                        // adjs both materials
+                        usedMat = `${adj1}-${adj2} ${obj}`;
+                    } else {
+                        usedMat = `${adj1} ${adj2} ${obj}`;
+                    }
+                } else {
+                    let adj = choice(adjs);
+                    let pr = -1;
+                    if (typeof(adj) == "object") {
+                        pr = adj[1];
+                        adj = adj[0];
+                    }
+                    let obj = choice(objs);
+                    let isObjMat = 0;
+                    if (typeof(obj) == "object") {
+                        isObjMat = 1;
+                        obj = obj[0];
+                    }
+                    if (isObjMat && pr == 5) {
+                        // adj is mat and obj is mat
+                        continue;
+                    }
+                    usedMat = `${adj} ${obj}`;
+                }
+            } else {
+                usedMat = choice(concepts.concat(objs));
+                if (typeof(usedMat) == "object") {
+                    usedMat = usedMat[0];
+                }
+            }
+
+            // choose preposition
+            if (typeof(usedApp) == "string") {
+                s = `${usedMat} for ${usedApp}`;
+            } else {
+                let joinWd = usedApp[1];
+                usedApp = usedApp[0];
+                if (joinWd == "u") {
+                    s = `${usedApp} using ${usedMat}`;
+                } else if (joinWd == "b") {
+                    s = `${usedApp} based on ${usedMat}`;
+                }
+            }
+            s = upperStart(s);
+
+            // skip duplicates
+            let strs = "nano meta optic random chiral waveguide laser".split(" ");
+            dup = 0;
+            for (let i = 0; i < strs.length; i++) {
+                let src = strs[i];
+                if (count(s.toLowerCase(), src) > 1) {
+                    dup = 1;
+                }
+            }
+        }
+        document.getElementById("idea").innerHTML = s;
+    </script>
+</body>
+</html>
